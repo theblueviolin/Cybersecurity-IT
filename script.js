@@ -478,6 +478,12 @@ document.addEventListener('DOMContentLoaded', () => {
     displayMemoryPanel('memory-panel');
   }
 
+  // Initialize integrations panel if present
+  const integrationsContainer = document.getElementById('integrations-panel');
+  if (integrationsContainer) {
+    updateIntegrationsPanel();
+  }
+
   // Add slide-in animation to cards
   const cards = document.querySelectorAll('.card, .project-card');
   cards.forEach((card, index) => {
@@ -533,6 +539,61 @@ function showIntegrationModal(title, bodyHtml, autoClose = true) {
 
 window.showIntegrationModal = showIntegrationModal;
 
+// ===== INTEGRATIONS PANEL RENDER =====
+function updateIntegrationsPanel() {
+  const container = document.getElementById('integrations-panel');
+  const content = document.getElementById('integrations-content');
+  if (!container || !content) return;
+
+  const splunk = labMemory.get('splunk_events') || [];
+  const cs = labMemory.get('crowdstrike_alerts') || [];
+  const sn = labMemory.get('servicenow_incidents') || [];
+
+  const items = [];
+
+  // Latest Splunk entries (show last 5)
+  splunk.slice(-5).forEach(ev => {
+    items.push({
+      title: `Splunk — ${ev.source}`,
+      body: `Data was indexed into Splunk for search and correlation. In a real environment this would: ingest events into an index (e.g. <code>index=cyber</code>), make them searchable, and allow alerts/saved searches to trigger.<br><strong>Example Search:</strong> <code>index=cyber sourcetype=${ev.source} | stats count by ip</code>`
+    });
+  });
+
+  // Latest CrowdStrike entries
+  cs.slice(-5).forEach(ev => {
+    items.push({
+      title: `CrowdStrike — ${ev.source}`,
+      body: `EDR alert created. Analysts would triage, investigate the host, and possibly quarantine the endpoint. Alert summary: ${JSON.stringify(ev.alertData)}`
+    });
+  });
+
+  // Latest ServiceNow incidents
+  sn.slice(-5).forEach(ev => {
+    items.push({
+      title: `ServiceNow — ${ev.incidentId || 'INC'}`,
+      body: `This simulates creating an incident in ServiceNow. In a real IT workflow the incident would be assigned to a queue, have an SLA, and include fields for priority, assignment group, and work notes.<br><strong>Quick actions:</strong> assign to team, add work notes, attach logs, and track until resolved.`
+    });
+  });
+
+  if (items.length === 0) {
+    container.style.display = 'none';
+    content.innerHTML = '';
+    return;
+  }
+
+  // Render items newest-first
+  content.innerHTML = items.reverse().map(it => `
+    <div style="margin-bottom:0.9rem;">
+      <div style="color: var(--accent-blue); font-weight:700; margin-bottom:0.25rem;">${it.title}</div>
+      <div style="color: var(--text-secondary); font-size:0.95rem;">${it.body}</div>
+    </div>
+  `).join('');
+
+  container.style.display = 'block';
+}
+
+window.updateIntegrationsPanel = updateIntegrationsPanel;
+
 // ===== SIMULATED VENDOR INTEGRATIONS =====
 function simulateSplunkIngest(source, payload) {
   // payload should be serializable
@@ -543,6 +604,7 @@ function simulateSplunkIngest(source, payload) {
     <p>Data was indexed into Splunk for search and correlation. In a real environment this would: ingest events into an index (e.g. <code>index=cyber</code>), make them searchable, and allow alerts/saved searches to trigger.</p>
     <p style="margin-top:0.5rem;"><strong>Example Search:</strong> <code>index=cyber sourcetype=${source} | stats count by ip</code></p>
   `);
+    updateIntegrationsPanel();
 }
 
 function simulateCrowdStrikeAlert(source, alertData) {
@@ -553,6 +615,7 @@ function simulateCrowdStrikeAlert(source, alertData) {
     <p>An endpoint detection alert was generated in the EDR console. In practice this would create a detection with a case ID, provide host context, and allow responders to quarantine the host or run investigation actions.</p>
     <p style="margin-top:0.5rem;"><strong>What typically happens:</strong> a security analyst triages the alert, examines host telemetry, and may escalate to incident response or create a ticket in ServiceNow.</p>
   `);
+  updateIntegrationsPanel();
 }
 
 function simulateServiceNowTicket(ticket) {
@@ -569,6 +632,7 @@ function simulateServiceNowTicket(ticket) {
     <p>This simulates creating an incident in ServiceNow. In a real IT workflow the incident would be assigned to a queue, have an SLA, and include fields for priority, assignment group, and work notes.</p>
     <p style="margin-top:0.5rem;"><strong>Quick actions:</strong> assign to team, add work notes, attach logs, and track until resolved.</p>
   `);
+  updateIntegrationsPanel();
   return incident;
 }
 
