@@ -23,7 +23,8 @@
 }
 
 html {
-  font-size: 15px;
+  /* smaller base font to simulate a more zoomed-out view */
+  font-size: 13px;
 }
 
 html, body {
@@ -49,7 +50,7 @@ header {
 
 .header-container {
   max-width: 1200px;
-  width: min(1200px, 60vw);
+  width: min(1200px, 50vw);
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -79,7 +80,7 @@ header {
 .container {
   /* Centered content occupying ~60% of viewport width to create large side margins */
   max-width: 1200px;
-  width: min(1200px, 60vw);
+  width: min(1200px, 50vw);
   margin: 0 auto;
   padding: 1rem 0;
   box-shadow: none;
