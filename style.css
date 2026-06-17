@@ -76,16 +76,11 @@ header {
 
 /* ===== MAIN CONTAINER ===== */
 .container {
+  /* narrow the content column and leave large visible side gutters to simulate a "zoomed-out" view */
   max-width: 1180px;
-  width: min(1180px, calc(100% - 3rem));
+  width: min(980px, calc(100% - 40vw));
   margin: 0 auto;
   padding: 1.75rem 0;
-}
-
-/* Add page margin padding around the content so it feels less zoomed in */
-body {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
 }
 
 /* ===== CARDS ===== */
