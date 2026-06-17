@@ -33,6 +33,11 @@
         </p>
       </div>
       <button class="btn" onclick="clearScan()" style="width: 100%;">Clear Results</button>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn" onclick="clearScan()" style="flex:1">Clear Results</button>
+          <button class="btn" onclick="sendScanToSplunk()" style="flex:1">Send to Splunk</button>
+          <button class="btn btn-secondary" onclick="alertCrowdStrike()" style="flex:1">Alert CrowdStrike</button>
+        </div>
     </div>
 
     <!-- SCAN RESULTS -->
@@ -58,6 +63,10 @@
             <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Attack Surface</div>
             <div style="color: var(--accent-yellow); font-weight: 700;" id="attack-surface">-</div>
           </div>
+              <div style="margin-top: 0.75rem; display:flex; gap:0.5rem;">
+                <button class="btn" onclick="sendScanToSplunk()">Send Scan to Splunk</button>
+                <button class="btn btn-secondary" onclick="alertCrowdStrike()">Alert CrowdStrike</button>
+              </div>
         </div>
       </div>
 
@@ -257,6 +266,18 @@
       document.getElementById('results-section').style.display = 'none';
       document.getElementById('ip-input').value = '192.168.1.0/24';
     }
+
+      function sendScanToSplunk() {
+        const ipInput = document.getElementById('ip-input').value.trim();
+        const scanResults = scanner.scanNetwork(ipInput);
+        simulateSplunkIngest('network_scan', scanResults);
+      }
+
+      function alertCrowdStrike() {
+        const ipInput = document.getElementById('ip-input').value.trim();
+        const scanResults = scanner.scanNetwork(ipInput);
+        simulateCrowdStrikeAlert('network_scan', scanResults.riskySummary);
+      }
   </script>
 </body>
 </html>

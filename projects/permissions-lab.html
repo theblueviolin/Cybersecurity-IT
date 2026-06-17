@@ -253,6 +253,9 @@
       const section = document.getElementById('result-section');
       section.style.display = 'block';
 
+      // store last result for potential export
+      window.lastPermissionResult = { result, userRole, resource, action };
+
       // Title
       document.getElementById('result-title').textContent = result.allowed ? '✓ Access Allowed' : '✗ Access Denied';
 
@@ -279,6 +282,19 @@
 
       // Principle
       document.getElementById('principle').textContent = result.principle;
+      // add export button
+      if (!document.getElementById('log-to-splunk-btn')) {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        btn.id = 'log-to-splunk-btn';
+        btn.style.marginTop = '0.75rem';
+        btn.textContent = 'Log Decision to Splunk';
+        btn.onclick = function() {
+          if (!window.lastPermissionResult) return alert('No permission result to send');
+          simulateSplunkIngest('permission_check', window.lastPermissionResult);
+        };
+        section.appendChild(btn);
+      }
     }
   </script>
 </body>

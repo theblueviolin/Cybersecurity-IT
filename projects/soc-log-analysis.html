@@ -26,6 +26,8 @@
         <button onclick="generateLogs()">Generate Logs</button>
         <button class="btn btn-secondary" onclick="analyzeLogs()">Analyze Logs</button>
         <button class="btn" onclick="exportReport()">Export Report (JSON)</button>
+        <button class="btn" onclick="sendLogsToSplunk()">Send to Splunk</button>
+        <button class="btn btn-secondary" onclick="createServiceNowFromIncident()">Create ServiceNow Incident</button>
         <button class="btn" onclick="clearLogs()">Clear All</button>
       </div>
       <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem;">
@@ -112,6 +114,11 @@
         <p id="incident-summary" style="color: var(--text-secondary); font-size: 0.9rem;">
           Complete log analysis to generate incident summary.
         </p>
+        <div style="margin-top: 0.75rem; display:flex; gap:0.5rem;">
+          <button class="btn" onclick="sendAnalysisToSplunk()">Send Analysis to Splunk</button>
+          <button class="btn btn-secondary" onclick="createServiceNowFromIncident()">Create ServiceNow Incident</button>
+          <button class="btn" onclick="sendIncidentToCrowdStrike()">Alert CrowdStrike</button>
+        </div>
       </div>
     </div>
 
@@ -262,6 +269,36 @@
 
       exportToJSON(report, 'soc-log-analysis-report.json');
       addMemoryEvent('SOC_EXPORT', 'Incident report exported to JSON');
+    }
+
+    function sendLogsToSplunk() {
+      if (currentLogs.length === 0) return alert('Generate logs first');
+      simulateSplunkIngest('soc_logs', currentLogs);
+    }
+
+    function sendAnalysisToSplunk() {
+      if (currentLogs.length === 0) return alert('Generate and analyze logs first');
+      const analysis = analyzer.detectBruteForce(currentLogs);
+      simulateSplunkIngest('soc_analysis', analysis);
+    }
+
+    function createServiceNowFromIncident() {
+      if (currentLogs.length === 0) return alert('Generate and analyze logs first');
+      const analysis = analyzer.detectBruteForce(currentLogs);
+      const incident = {
+        short_description: analysis.bruteForceDetected ? 'Brute force detection' : 'Suspicious login activity',
+        details: analysis,
+        source: 'SOC Log Analysis'
+      };
+      const res = simulateServiceNowTicket(incident);
+      // Save reference
+      labMemory.append('servicenow_links', { source: 'soc', incidentId: res.incidentId });
+    }
+
+    function sendIncidentToCrowdStrike() {
+      if (currentLogs.length === 0) return alert('Generate and analyze logs first');
+      const analysis = analyzer.detectBruteForce(currentLogs);
+      simulateCrowdStrikeAlert('soc_analysis', analysis);
     }
 
     function clearLogs() {

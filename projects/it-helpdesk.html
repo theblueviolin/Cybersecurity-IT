@@ -60,6 +60,7 @@
       </div>
 
       <button class="btn" onclick="resetForm()" style="width: 100%; margin-top: 1rem;">Create Another Ticket</button>
+      <button class="btn" onclick="pushCurrentTicketToServiceNow()" style="width: 100%; margin-top: 0.5rem;">Create ServiceNow Incident</button>
     </div>
 
     <!-- TICKET HISTORY -->
@@ -179,6 +180,7 @@
       document.getElementById('troubleshooting-steps').innerHTML = stepsHtml;
 
       document.getElementById('confirmation-section').style.display = 'block';
+      window.lastCreatedTicket = ticket;
     }
 
     function resetForm() {
@@ -240,6 +242,16 @@
         resetForm();
         addMemoryEvent('HELPDESK_CLEAR', 'All tickets cleared');
       }
+    }
+
+    function pushCurrentTicketToServiceNow() {
+      if (!window.lastCreatedTicket) return alert('No ticket to push. Create a ticket first.');
+      const incident = {
+        short_description: `Helpdesk: ${getCategoryLabel(window.lastCreatedTicket.issueType)} - ${window.lastCreatedTicket.ticketId}`,
+        details: window.lastCreatedTicket,
+        source: 'Helpdesk'
+      };
+      simulateServiceNowTicket(incident);
     }
 
     // Initialize

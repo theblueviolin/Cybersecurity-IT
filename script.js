@@ -499,3 +499,34 @@ window.resetLabData = resetLabData;
 window.addMemoryEvent = addMemoryEvent;
 window.formatTimestamp = formatTimestamp;
 window.exportToJSON = exportToJSON;
+
+// ===== SIMULATED VENDOR INTEGRATIONS =====
+function simulateSplunkIngest(source, payload) {
+  // payload should be serializable
+  labMemory.append('splunk_events', { source, payload });
+  addMemoryEvent('SPLUNK_INGEST', `Sent ${source} payload to Splunk (${Array.isArray(payload) ? payload.length : 1} items)`);
+  alert('Simulated: Sent data to Splunk (ingest OK).');
+}
+
+function simulateCrowdStrikeAlert(source, alertData) {
+  labMemory.append('crowdstrike_alerts', { source, alertData });
+  addMemoryEvent('CROWDSTRIKE_ALERT', `Sent ${source} alert to CrowdStrike`);
+  alert('Simulated: CrowdStrike alert created (EDR).');
+}
+
+function simulateServiceNowTicket(ticket) {
+  // create a fake incident id and store
+  const incident = {
+    incidentId: `INC${Math.floor(Math.random() * 900000) + 100000}`,
+    ...ticket,
+    createdAt: new Date().toISOString()
+  };
+  labMemory.append('servicenow_incidents', incident);
+  addMemoryEvent('SERVICENOW_CREATE', `Created ServiceNow incident ${incident.incidentId}`);
+  alert(`Simulated: ServiceNow incident ${incident.incidentId} created.`);
+  return incident;
+}
+
+window.simulateSplunkIngest = simulateSplunkIngest;
+window.simulateCrowdStrikeAlert = simulateCrowdStrikeAlert;
+window.simulateServiceNowTicket = simulateServiceNowTicket;

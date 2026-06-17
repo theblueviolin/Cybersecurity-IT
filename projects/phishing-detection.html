@@ -40,7 +40,11 @@
           <div style="font-size: 1.8rem; color: var(--accent-yellow); font-weight: 700;" id="stat-accuracy">-</div>
         </div>
       </div>
-      <button style="margin-top: 1rem;" class="btn btn-danger" onclick="resetTraining()">Reset Training</button>
+      <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+        <button style="flex:1;" class="btn btn-danger" onclick="resetTraining()">Reset Training</button>
+        <button style="flex:1;" class="btn" onclick="exportTrainingToSplunk()">Export Training to Splunk</button>
+        <button style="flex:1;" class="btn btn-secondary" onclick="alertCrowdStrikeFromPhishing()">Send Last Alert to CrowdStrike</button>
+      </div>
     </div>
 
     <!-- EMAIL CARDS -->
@@ -143,6 +147,7 @@
 
     function classifyEmail(emailId, isPhishing) {
       const analysis = classifier.analyzeEmail(emailId);
+      window.lastPhishingAnalysis = { analysis, userDecision: isPhishing };
       const isCorrect = analysis.isPhishing === isPhishing;
 
       // Update stats
@@ -208,6 +213,17 @@
 
     // Initialize
     renderEmails();
+
+    function exportTrainingToSplunk() {
+      const emails = classifier.getEmails();
+      const stats = labMemory.get('phishing_training_stats') || {};
+      simulateSplunkIngest('phishing_training', { emails, stats });
+    }
+
+    function alertCrowdStrikeFromPhishing() {
+      if (!window.lastPhishingAnalysis) return alert('No recent classification to send');
+      simulateCrowdStrikeAlert('phishing_classification', window.lastPhishingAnalysis);
+    }
   </script>
 </body>
 </html>
