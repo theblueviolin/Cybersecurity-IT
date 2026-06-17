@@ -500,18 +500,59 @@ window.addMemoryEvent = addMemoryEvent;
 window.formatTimestamp = formatTimestamp;
 window.exportToJSON = exportToJSON;
 
+// ===== INTEGRATION MODAL UI =====
+function showIntegrationModal(title, bodyHtml, autoClose = true) {
+  // remove existing modal if present
+  const existing = document.querySelector('.integration-modal');
+  if (existing) existing.remove();
+
+  const modal = document.createElement('div');
+  modal.className = 'integration-modal';
+
+  modal.innerHTML = `
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">${title}</div>
+        <button class="modal-close">Close</button>
+      </div>
+      <div class="modal-body">${bodyHtml}</div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  const closeBtn = modal.querySelector('.modal-close');
+  closeBtn.addEventListener('click', () => modal.remove());
+
+  if (autoClose) {
+    setTimeout(() => {
+      if (document.body.contains(modal)) modal.remove();
+    }, 6000);
+  }
+}
+
+window.showIntegrationModal = showIntegrationModal;
+
 // ===== SIMULATED VENDOR INTEGRATIONS =====
 function simulateSplunkIngest(source, payload) {
   // payload should be serializable
   labMemory.append('splunk_events', { source, payload });
   addMemoryEvent('SPLUNK_INGEST', `Sent ${source} payload to Splunk (${Array.isArray(payload) ? payload.length : 1} items)`);
-  alert('Simulated: Sent data to Splunk (ingest OK).');
+  showIntegrationModal('Splunk — Data Ingested', `
+    <p><strong>Source:</strong> ${source}</p>
+    <p>Data was indexed into Splunk for search and correlation. In a real environment this would: ingest events into an index (e.g. <code>index=cyber</code>), make them searchable, and allow alerts/saved searches to trigger.</p>
+    <p style="margin-top:0.5rem;"><strong>Example Search:</strong> <code>index=cyber sourcetype=${source} | stats count by ip</code></p>
+  `);
 }
 
 function simulateCrowdStrikeAlert(source, alertData) {
   labMemory.append('crowdstrike_alerts', { source, alertData });
   addMemoryEvent('CROWDSTRIKE_ALERT', `Sent ${source} alert to CrowdStrike`);
-  alert('Simulated: CrowdStrike alert created (EDR).');
+  showIntegrationModal('CrowdStrike — EDR Alert Created', `
+    <p><strong>Source:</strong> ${source}</p>
+    <p>An endpoint detection alert was generated in the EDR console. In practice this would create a detection with a case ID, provide host context, and allow responders to quarantine the host or run investigation actions.</p>
+    <p style="margin-top:0.5rem;"><strong>What typically happens:</strong> a security analyst triages the alert, examines host telemetry, and may escalate to incident response or create a ticket in ServiceNow.</p>
+  `);
 }
 
 function simulateServiceNowTicket(ticket) {
@@ -523,7 +564,11 @@ function simulateServiceNowTicket(ticket) {
   };
   labMemory.append('servicenow_incidents', incident);
   addMemoryEvent('SERVICENOW_CREATE', `Created ServiceNow incident ${incident.incidentId}`);
-  alert(`Simulated: ServiceNow incident ${incident.incidentId} created.`);
+  showIntegrationModal('ServiceNow — Incident Created', `
+    <p><strong>Incident:</strong> ${incident.incidentId}</p>
+    <p>This simulates creating an incident in ServiceNow. In a real IT workflow the incident would be assigned to a queue, have an SLA, and include fields for priority, assignment group, and work notes.</p>
+    <p style="margin-top:0.5rem;"><strong>Quick actions:</strong> assign to team, add work notes, attach logs, and track until resolved.</p>
+  `);
   return incident;
 }
 

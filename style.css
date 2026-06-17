@@ -84,6 +84,7 @@ header {
   margin: 0 auto;
   padding: 1rem 0;
   box-shadow: none;
+}
 
 /* ===== CARDS ===== */
 .card {
@@ -142,6 +143,17 @@ header {
   .grid-2, .grid-3 {
     grid-template-columns: 1fr;
   }
+}
+
+/* Cyber/IT specific grids */
+.grid-cyber {
+  grid-template-columns: repeat(3, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.grid-it {
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
+  gap: 1rem;
 }
 
 /* ===== PROJECT CARDS ===== */
@@ -657,4 +669,61 @@ footer a:hover {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ===== INTEGRATION MODAL ===== */
+.integration-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 2200;
+}
+
+.integration-modal .modal-box {
+  background: linear-gradient(180deg, rgba(10,14,39,0.95), rgba(21,25,48,0.98));
+  border: 1px solid var(--border-color);
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  width: min(800px, 92%);
+  max-height: 80vh;
+  overflow: auto;
+  color: var(--text-primary);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+.integration-modal .modal-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.integration-modal .modal-title {
+  color: var(--accent-blue);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.integration-modal .modal-close {
+  background: transparent;
+  border: none;
+  color: var(--accent-green);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.integration-modal .modal-body {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .grid-cyber, .grid-it {
+    grid-template-columns: 1fr;
+  }
 }
