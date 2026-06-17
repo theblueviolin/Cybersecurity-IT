@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permissions & Access Control Lab - Cybersecurity Lab</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="header-title">🔑 Permissions & Access Control Lab</div>
+      <div class="header-subtitle">System Security | Least Privilege & Access Management</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <a href="../" class="back-link">← Back to Dashboard</a>
+
+    <!-- INTERACTIVE SIMULATOR -->
+    <div class="card">
+      <div class="card-title">🎮 Access Control Simulator</div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <label style="color: var(--accent-blue); font-weight: 600; display: block; margin-bottom: 0.5rem;">User Role:</label>
+          <select id="user-role">
+            <option value="">-- Select Role --</option>
+            <option value="admin">👨‍💼 Administrator</option>
+            <option value="employee">👤 Employee</option>
+            <option value="guest">👁️ Guest</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="color: var(--accent-blue); font-weight: 600; display: block; margin-bottom: 0.5rem;">Resource:</label>
+          <select id="resource">
+            <option value="">-- Select File --</option>
+            <option value="system_logs.txt">📄 system_logs.txt (RESTRICTED)</option>
+            <option value="config_file.txt">⚙️ config_file.txt (RESTRICTED)</option>
+            <option value="violin_score.pdf">🎵 violin_score.pdf (PUBLIC)</option>
+            <option value="project_files.docx">📋 project_files.docx (STANDARD)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <label style="color: var(--accent-blue); font-weight: 600; display: block; margin-bottom: 0.5rem;">Action:</label>
+          <select id="action">
+            <option value="">-- Select Action --</option>
+            <option value="read">📖 Read</option>
+            <option value="write">✏️ Write/Modify</option>
+            <option value="execute">▶️ Execute</option>
+            <option value="delete">🗑️ Delete</option>
+          </select>
+        </div>
+
+        <div style="display: flex; align-items: flex-end;">
+          <button class="btn btn-secondary" onclick="checkAccess()" style="width: 100%;">Check Access</button>
+        </div>
+      </div>
+
+      <p style="color: var(--text-secondary); font-size: 0.9rem;">
+        <strong>Scenario:</strong> Determine if a user role has permission to perform an action on a resource. 
+        Access is based on the <strong>Least Privilege Principle</strong>: users receive minimum permissions needed.
+      </p>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="result-section" class="card" style="display: none;">
+      <div class="card-title" id="result-title">Result</div>
+
+      <div id="access-alert"></div>
+
+      <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 212, 255, 0.1); border-radius: 6px; border-left: 3px solid var(--accent-blue);">
+        <h3 style="color: var(--accent-blue); margin-bottom: 0.75rem;">Decision Explanation</h3>
+        <p id="explanation" style="color: var(--text-secondary); line-height: 1.8;"></p>
+      </div>
+
+      <div style="margin-top: 1rem; padding: 1rem; background: rgba(0, 255, 136, 0.1); border-radius: 6px; border-left: 3px solid var(--accent-green);">
+        <h3 style="color: var(--accent-green); margin-bottom: 0.5rem;">Security Principle</h3>
+        <p id="principle" style="color: var(--text-secondary); font-size: 0.95rem;"></p>
+      </div>
+    </div>
+
+    <!-- ROLE DEFINITIONS -->
+    <div class="card">
+      <div class="card-title">👥 Role-Based Access Control (RBAC)</div>
+
+      <div class="grid grid-3" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+        <!-- Admin -->
+        <div style="background: rgba(0, 212, 255, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-blue);">
+          <h3 style="color: var(--accent-blue); margin-bottom: 0.75rem;">👨‍💼 Administrator (Level 3)</h3>
+          <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            <p><strong>Permissions:</strong></p>
+            <ul style="margin-left: 1rem;">
+              <li>✓ Read</li>
+              <li>✓ Write</li>
+              <li>✓ Execute</li>
+              <li>✓ Delete</li>
+            </ul>
+            <p style="margin-top: 0.75rem;"><strong>Can Access:</strong> All system resources</p>
+          </div>
+        </div>
+
+        <!-- Employee -->
+        <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-green);">
+          <h3 style="color: var(--accent-green); margin-bottom: 0.75rem;">👤 Employee (Level 2)</h3>
+          <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            <p><strong>Permissions:</strong></p>
+            <ul style="margin-left: 1rem;">
+              <li>✓ Read</li>
+              <li>✓ Write</li>
+              <li>✗ Execute</li>
+              <li>✗ Delete</li>
+            </ul>
+            <p style="margin-top: 0.75rem;"><strong>Can Access:</strong> Standard work files</p>
+          </div>
+        </div>
+
+        <!-- Guest -->
+        <div style="background: rgba(255, 215, 0, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-yellow);">
+          <h3 style="color: var(--accent-yellow); margin-bottom: 0.75rem;">👁️ Guest (Level 1)</h3>
+          <div style="color: var(--text-secondary); font-size: 0.9rem;">
+            <p><strong>Permissions:</strong></p>
+            <ul style="margin-left: 1rem;">
+              <li>✓ Read</li>
+              <li>✗ Write</li>
+              <li>✗ Execute</li>
+              <li>✗ Delete</li>
+            </ul>
+            <p style="margin-top: 0.75rem;"><strong>Can Access:</strong> Public content only</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESOURCE CLASSIFICATION -->
+    <div class="card">
+      <div class="card-title">📂 Resource Classification</div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Resource</th>
+            <th>Classification</th>
+            <th>Minimum Access Level</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-family: monospace;">system_logs.txt</td>
+            <td><span class="status-badge status-danger">RESTRICTED</span></td>
+            <td>Level 3 (Admin)</td>
+            <td>Contains system events and audit data. Only admins should review.</td>
+          </tr>
+          <tr>
+            <td style="font-family: monospace;">config_file.txt</td>
+            <td><span class="status-badge status-danger">RESTRICTED</span></td>
+            <td>Level 3 (Admin)</td>
+            <td>System configuration. Unauthorized changes could break systems.</td>
+          </tr>
+          <tr>
+            <td style="font-family: monospace;">project_files.docx</td>
+            <td><span class="status-badge status-info">STANDARD</span></td>
+            <td>Level 2 (Employee)</td>
+            <td>Team project documentation. Employees need read/write access.</td>
+          </tr>
+          <tr>
+            <td style="font-family: monospace;">violin_score.pdf</td>
+            <td><span class="status-badge status-success">PUBLIC</span></td>
+            <td>Level 1 (Guest)</td>
+            <td>Public file. Anyone can read. Not sensitive.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- MEMORY PANEL -->
+    <div id="memory-panel"></div>
+
+    <!-- EDUCATIONAL INFO -->
+    <div class="card">
+      <div class="card-title">📖 Access Control & Least Privilege Principle</div>
+
+      <h3 style="color: var(--accent-green); margin: 0 0 0.75rem 0; font-size: 1rem;">What is Least Privilege?</h3>
+      <p>
+        Least Privilege is a fundamental security principle: every user, application, and system component should have 
+        the <strong>minimum level of access required</strong> to perform their function. This reduces risk by limiting 
+        the damage an attacker can do if they compromise a user account.
+      </p>
+
+      <h3 style="color: var(--accent-green); margin: 1rem 0 0.75rem 0; font-size: 1rem;">Why Least Privilege Matters:</h3>
+      <ul style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+        <li><strong>Limits damage from compromised accounts:</strong> If an employee's account is hacked, attacker can only access what that employee can access</li>
+        <li><strong>Reduces insider threats:</strong> Prevents accidents (e.g., accidental file deletion) and malicious acts</li>
+        <li><strong>Compliance requirements:</strong> HIPAA, GDPR, SOC 2 all mandate least privilege principles</li>
+        <li><strong>System stability:</strong> Limits accidental changes that could break systems</li>
+      </ul>
+
+      <h3 style="color: var(--accent-green); margin: 1rem 0 0.75rem 0; font-size: 1rem;">Real-World Examples:</h3>
+      <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+        <li>Database passwords should NOT be hardcoded in applications</li>
+        <li>Service accounts should have minimal permissions (not admin)</li>
+        <li>Contractors should have temporary, limited access</li>
+        <li>Developers should NOT have production database write access</li>
+        <li>Interns should only see non-sensitive data</li>
+      </ul>
+
+      <h3 style="color: var(--accent-green); margin: 1rem 0 0.75rem 0; font-size: 1rem;">Implementation Methods:</h3>
+      <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+        <li><strong>Role-Based Access Control (RBAC):</strong> Users assigned to roles with predefined permissions</li>
+        <li><strong>Attribute-Based Access Control (ABAC):</strong> Access based on user attributes, resource attributes, and environment</li>
+        <li><strong>Just-In-Time (JIT) Access:</strong> Temporary elevated access when needed, revoked after use</li>
+        <li><strong>Multi-Factor Authentication (MFA):</strong> Extra security layer for sensitive access</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Permissions & Access Control Simulation | Security Training</p>
+    <p>Data stored locally in browser | No external connections</p>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    const permissionManager = new PermissionManager();
+
+    function checkAccess() {
+      const userRole = document.getElementById('user-role').value;
+      const resource = document.getElementById('resource').value;
+      const action = document.getElementById('action').value;
+
+      if (!userRole || !resource || !action) {
+        alert('Please select all fields.');
+        return;
+      }
+
+      const result = permissionManager.checkAccess(userRole, resource, action);
+      displayResult(result, userRole, resource, action);
+
+      // Save to memory
+      addMemoryEvent('PERMISSION_CHECK', `${userRole} attempted to ${action} ${resource}: ${result.allowed ? 'ALLOWED' : 'DENIED'}`);
+    }
+
+    function displayResult(result, userRole, resource, action) {
+      const section = document.getElementById('result-section');
+      section.style.display = 'block';
+
+      // Title
+      document.getElementById('result-title').textContent = result.allowed ? '✓ Access Allowed' : '✗ Access Denied';
+
+      // Alert
+      const alertDiv = document.getElementById('access-alert');
+      if (result.allowed) {
+        alertDiv.innerHTML = `
+          <div class="alert alert-success">
+            <strong>✓ ACCESS ALLOWED</strong><br>
+            User role <strong>${userRole}</strong> has permission to <strong>${action}</strong> resource <strong>${resource}</strong>.
+          </div>
+        `;
+      } else {
+        alertDiv.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>✗ ACCESS DENIED</strong><br>
+            User role <strong>${userRole}</strong> does NOT have permission to <strong>${action}</strong> resource <strong>${resource}</strong>.
+          </div>
+        `;
+      }
+
+      // Explanation
+      document.getElementById('explanation').textContent = result.reason;
+
+      // Principle
+      document.getElementById('principle').textContent = result.principle;
+    }
+  </script>
+</body>
+</html>

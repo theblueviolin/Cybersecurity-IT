@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Intrusion Detection - Cybersecurity Lab</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="header-title">🔍 Network Intrusion Detection System</div>
+      <div class="header-subtitle">Penetration Testing | Network Reconnaissance & IDS</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <a href="../" class="back-link">← Back to Dashboard</a>
+
+    <!-- CONTROLS SECTION -->
+    <div class="card">
+      <div class="card-title">🎮 Network Scanner</div>
+      <div style="margin-bottom: 1.5rem;">
+        <label style="color: var(--accent-blue); font-weight: 600; display: block; margin-bottom: 0.5rem;">Target IP Range:</label>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+          <input type="text" id="ip-input" value="192.168.1.0/24" style="flex-grow: 1;">
+          <button class="btn btn-secondary" onclick="runScan()">▶ Run Network Scan</button>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.85rem;">
+          <strong>Tip:</strong> Enter an IP range or single IP (e.g., 192.168.1.105 or 192.168.1.0/24)
+        </p>
+      </div>
+      <button class="btn" onclick="clearScan()" style="width: 100%;">Clear Results</button>
+    </div>
+
+    <!-- SCAN RESULTS -->
+    <div class="card" id="results-section" style="display: none;">
+      <div class="card-title">📊 Scan Results</div>
+
+      <!-- Summary -->
+      <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(0, 212, 255, 0.1); border-radius: 6px; border-left: 3px solid var(--accent-blue);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+          <div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Target Network</div>
+            <div style="color: var(--accent-blue); font-weight: 700;" id="target-network">-</div>
+          </div>
+          <div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Open Ports</div>
+            <div style="color: var(--accent-green); font-weight: 700;" id="open-ports">0</div>
+          </div>
+          <div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">High Risk Services</div>
+            <div style="color: var(--accent-red); font-weight: 700;" id="high-risk">0</div>
+          </div>
+          <div>
+            <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Attack Surface</div>
+            <div style="color: var(--accent-yellow); font-weight: 700;" id="attack-surface">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Risk Assessment -->
+      <div id="risk-alert" style="margin-bottom: 1rem;">
+        <!-- Risk alerts will appear here -->
+      </div>
+
+      <!-- Port Details -->
+      <h3 style="color: var(--accent-blue); margin: 1.5rem 0 1rem 0; font-size: 1.1rem;">Open Network Services</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Port</th>
+            <th>Service</th>
+            <th>Status</th>
+            <th>Risk Level</th>
+            <th>Security Note</th>
+          </tr>
+        </thead>
+        <tbody id="ports-table">
+        </tbody>
+      </table>
+
+      <!-- Recommendations -->
+      <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 255, 136, 0.1); border-radius: 6px; border-left: 3px solid var(--accent-green);">
+        <h3 style="color: var(--accent-green); margin-bottom: 0.75rem;">📋 Recommendations</h3>
+        <ul id="recommendations" style="color: var(--text-secondary); margin-left: 1.5rem;">
+        </ul>
+      </div>
+    </div>
+
+    <!-- MEMORY PANEL -->
+    <div id="memory-panel"></div>
+
+    <!-- EDUCATIONAL INFO -->
+    <div class="card">
+      <div class="card-title">📖 Network Reconnaissance & IDS Concepts</div>
+
+      <h3 style="color: var(--accent-green); margin: 1rem 0 0.5rem 0; font-size: 1rem;">What is Network Scanning?</h3>
+      <p>
+        Network scanning is the process of identifying active hosts and services on a network. 
+        Attackers use scanning to discover vulnerabilities. Defenders use similar tools (IDS/IPS systems) to monitor for suspicious scanning activity.
+      </p>
+
+      <h3 style="color: var(--accent-green); margin: 1.5rem 0 0.5rem 0; font-size: 1rem;">Common Ports & Services:</h3>
+      <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+        <li><strong>Port 22 (SSH):</strong> Secure Shell - Remote administration. Medium risk if exposed to internet.</li>
+        <li><strong>Port 80 (HTTP):</strong> Hypertext Transfer Protocol - Unencrypted web traffic.</li>
+        <li><strong>Port 443 (HTTPS):</strong> HTTPS - Encrypted web traffic. Lower risk.</li>
+        <li><strong>Port 21 (FTP):</strong> File Transfer Protocol - Legacy, unencrypted. HIGH RISK.</li>
+        <li><strong>Port 3306 (MySQL):</strong> Database service. Should NEVER be exposed to internet.</li>
+        <li><strong>Port 445 (SMB):</strong> Windows file sharing. CRITICAL RISK - WannaCry, NotPetya exploited this.</li>
+      </ul>
+
+      <h3 style="color: var(--accent-green); margin: 1.5rem 0 0.5rem 0; font-size: 1rem;">Attacker Reconnaissance Workflow:</h3>
+      <ol style="margin-left: 1.5rem; color: var(--text-secondary);">
+        <li><strong>Host Discovery:</strong> Ping sweep to find active IPs</li>
+        <li><strong>Port Scanning:</strong> Identify open ports</li>
+        <li><strong>Service Enumeration:</strong> Determine service versions</li>
+        <li><strong>Vulnerability Assessment:</strong> Check for known CVEs</li>
+        <li><strong>Exploitation:</strong> Attempt unauthorized access</li>
+      </ol>
+
+      <h3 style="color: var(--accent-green); margin: 1.5rem 0 0.5rem 0; font-size: 1rem;">How IDS/IPS Systems Work:</h3>
+      <p>
+        Intrusion Detection Systems (IDS) monitor network traffic for suspicious patterns. 
+        Intrusion Prevention Systems (IPS) actively block detected attacks. Both use:
+      </p>
+      <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+        <li><strong>Signature Detection:</strong> Match against known attack patterns</li>
+        <li><strong>Anomaly Detection:</strong> Flag unusual network behavior</li>
+        <li><strong>Port Scanning Detection:</strong> Alert when port scan activity detected</li>
+        <li><strong>Service Version Fingerprinting:</strong> Identify vulnerable services</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Network Intrusion Detection Simulation | Penetration Testing Training</p>
+    <p>Data stored locally in browser | No external connections</p>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    const scanner = new NetworkScanner();
+
+    function runScan() {
+      const ipInput = document.getElementById('ip-input').value.trim();
+      if (!ipInput) {
+        alert('Please enter an IP range');
+        return;
+      }
+
+      const scanResults = scanner.scanNetwork(ipInput);
+      displayResults(scanResults);
+
+      // Save to memory
+      labMemory.append('network_scans', {
+        ipRange: ipInput,
+        results: scanResults
+      });
+
+      addMemoryEvent('NETWORK_SCAN', `Scanned ${ipInput}: ${scanResults.openPorts.length} open ports, Risk: ${scanResults.riskySummary.recommendation}`);
+    }
+
+    function displayResults(results) {
+      const section = document.getElementById('results-section');
+      section.style.display = 'block';
+
+      // Update summary
+      document.getElementById('target-network').textContent = results.ipRange;
+      document.getElementById('open-ports').textContent = results.openPorts.length;
+      document.getElementById('high-risk').textContent = results.openPorts.filter(p => p.risk === 'HIGH' || p.risk === 'CRITICAL').length;
+      document.getElementById('attack-surface').textContent = results.riskySummary.attackSurface;
+
+      // Risk alert
+      const riskDiv = document.getElementById('risk-alert');
+      if (results.riskySummary.criticalPorts > 0) {
+        riskDiv.innerHTML = `
+          <div class="alert alert-danger">
+            <strong>⚠️ CRITICAL VULNERABILITIES DETECTED</strong><br>
+            ${results.riskySummary.criticalPorts} CRITICAL risk service(s) exposed. Immediate remediation required.
+          </div>
+        `;
+      } else if (results.riskySummary.highRiskPorts > 2) {
+        riskDiv.innerHTML = `
+          <div class="alert alert-warning">
+            <strong>⚠️ HIGH RISK EXPOSURE</strong><br>
+            ${results.riskySummary.highRiskPorts} HIGH risk services detected. Review and harden configuration.
+          </div>
+        `;
+      } else {
+        riskDiv.innerHTML = `
+          <div class="alert alert-info">
+            <strong>✓ MODERATE EXPOSURE</strong><br>
+            Network exposure is at acceptable levels. Continue monitoring.
+          </div>
+        `;
+      }
+
+      // Port table
+      const tbody = document.getElementById('ports-table');
+      tbody.innerHTML = results.openPorts.map(port => {
+        const riskClass = port.risk === 'CRITICAL' ? 'status-danger' : port.risk === 'HIGH' ? 'status-warning' : 'status-info';
+        const note = getPortNote(port.number);
+
+        return `
+          <tr>
+            <td style="font-family: monospace; font-weight: 600;">${port.number}</td>
+            <td>${port.service}</td>
+            <td><span class="status-badge ${port.status === 'OPEN' ? 'status-success' : 'status-info'}">${port.status}</span></td>
+            <td><span class="status-badge ${riskClass}">${port.risk}</span></td>
+            <td style="font-size: 0.9rem;">${note}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Recommendations
+      const recDiv = document.getElementById('recommendations');
+      const recs = generateRecommendations(results.openPorts);
+      recDiv.innerHTML = recs.map(rec => `<li>${rec}</li>`).join('');
+    }
+
+    function getPortNote(port) {
+      const notes = {
+        22: 'SSH exposed - restrict to VPN/bastion hosts only',
+        80: 'HTTP - redirect to HTTPS, consider disabling',
+        443: 'HTTPS - standard web port, acceptable exposure',
+        21: 'FTP LEGACY - disable immediately, use SFTP instead',
+        3306: 'MySQL exposed - CRITICAL, should never be on internet',
+        445: 'SMB exposed - CRITICAL vulnerability, major attack vector'
+      };
+      return notes[port] || 'Monitor for abuse';
+    }
+
+    function generateRecommendations(ports) {
+      const recs = [
+        '🔒 Implement firewall rules to restrict unnecessary port exposure',
+        '🔒 Disable services not in use (especially FTP, SMB on internet-facing systems)',
+        '🔒 Use VPN or bastion host for remote administration access',
+        '🔒 Enable network IDS/IPS to detect scanning and exploitation attempts',
+        '🔒 Keep services patched to latest security updates'
+      ];
+
+      const criticalPorts = ports.filter(p => p.risk === 'CRITICAL');
+      if (criticalPorts.length > 0) {
+        recs.unshift('🚨 IMMEDIATE: ' + criticalPorts.map(p => `Disable port ${p.number} (${p.service})`).join(', '));
+      }
+
+      return recs;
+    }
+
+    function clearScan() {
+      document.getElementById('results-section').style.display = 'none';
+      document.getElementById('ip-input').value = '192.168.1.0/24';
+    }
+  </script>
+</body>
+</html>

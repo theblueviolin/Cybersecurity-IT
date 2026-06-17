@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Helpdesk Ticket System - Cybersecurity Lab</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="header-title">🎫 IT Helpdesk Ticket System</div>
+      <div class="header-subtitle">IT Support | Help Desk Operations & Troubleshooting</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <a href="../" class="back-link">← Back to Dashboard</a>
+
+    <!-- TICKET SUBMISSION FORM -->
+    <div class="card">
+      <div class="card-title">📝 Submit Support Ticket</div>
+      
+      <div>
+        <label style="color: var(--accent-blue); font-weight: 600; display: block; margin-bottom: 0.5rem;">Issue Category:</label>
+        <select id="issue-type" style="margin-bottom: 1rem;">
+          <option value="">-- Select Issue Type --</option>
+          <option value="password_reset">🔑 Password Reset</option>
+          <option value="wifi_issue">📡 WiFi Not Working</option>
+          <option value="printer_issue">🖨️ Printer Issue</option>
+          <option value="slow_computer">⚙️ Slow Computer</option>
+          <option value="software_issue">💾 Software Issue</option>
+        </select>
+
+        <label style="color: var(--accent-blue); font-weight: 600; display: block; margin-bottom: 0.5rem;">Describe Your Issue:</label>
+        <textarea id="description" placeholder="Provide detailed description of the issue..." style="min-height: 100px; margin-bottom: 1rem;"></textarea>
+
+        <button class="btn btn-secondary" onclick="submitTicket()" style="width: 100%;">Submit Ticket</button>
+      </div>
+    </div>
+
+    <!-- CONFIRMATION -->
+    <div id="confirmation-section" class="card" style="display: none;">
+      <div class="card-title">✓ Ticket Created</div>
+      <div class="alert alert-success">
+        <strong>Ticket ID:</strong> <span id="ticket-id" style="font-family: monospace; font-weight: 700;"></span>
+      </div>
+
+      <div style="background: rgba(0, 212, 255, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-blue); margin-bottom: 1rem;">
+        <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.25rem;">Priority</div>
+        <div style="color: var(--accent-blue); font-weight: 700; font-size: 1.1rem;" id="priority-display">-</div>
+      </div>
+
+      <div>
+        <h3 style="color: var(--accent-blue); margin-bottom: 1rem;">Troubleshooting Steps:</h3>
+        <ol id="troubleshooting-steps" style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+        </ol>
+      </div>
+
+      <button class="btn" onclick="resetForm()" style="width: 100%; margin-top: 1rem;">Create Another Ticket</button>
+    </div>
+
+    <!-- TICKET HISTORY -->
+    <div class="card" id="history-section" style="display: none;">
+      <div class="card-title">📋 Ticket History</div>
+      <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+        Total tickets submitted: <strong style="color: var(--accent-blue);" id="ticket-count">0</strong>
+      </p>
+      <div style="max-height: 400px; overflow-y: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Ticket ID</th>
+              <th>Category</th>
+              <th>Priority</th>
+              <th>Created</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="history-table">
+          </tbody>
+        </table>
+      </div>
+      <button class="btn btn-danger" onclick="clearHistory()" style="margin-top: 1rem;">Clear History</button>
+    </div>
+
+    <!-- MEMORY PANEL -->
+    <div id="memory-panel"></div>
+
+    <!-- EDUCATIONAL INFO -->
+    <div class="card">
+      <div class="card-title">📖 IT Help Desk Operations</div>
+
+      <h3 style="color: var(--accent-green); margin: 0 0 0.75rem 0; font-size: 1rem;">What is IT Support?</h3>
+      <p>
+        IT Help Desk professionals provide first-line support for end-user issues. They triage problems, 
+        document issues, and either resolve them directly or escalate to specialized teams.
+      </p>
+
+      <h3 style="color: var(--accent-green); margin: 1rem 0 0.75rem 0; font-size: 1rem;">Ticket System Workflow:</h3>
+      <ol style="margin-left: 1.5rem; color: var(--text-secondary); line-height: 1.8;">
+        <li><strong>Reception:</strong> User submits ticket describing issue</li>
+        <li><strong>Categorization:</strong> Ticket type and priority assigned</li>
+        <li><strong>Triage:</strong> Help desk analyst reviews and creates action plan</li>
+        <li><strong>Resolution:</strong> Analyst follows troubleshooting steps to resolve issue</li>
+        <li><strong>Escalation:</strong> Complex issues escalated to specialized teams</li>
+        <li><strong>Documentation:</strong> Solutions documented in knowledge base</li>
+        <li><strong>Closure:</strong> Ticket closed when issue resolved</li>
+      </ol>
+
+      <h3 style="color: var(--accent-green); margin: 1rem 0 0.75rem 0; font-size: 1rem;">Priority Levels:</h3>
+      <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+        <li><strong>CRITICAL:</strong> System down, no workaround available. Immediate response required.</li>
+        <li><strong>HIGH:</strong> Significant impact on productivity. Expedited response.</li>
+        <li><strong>MEDIUM:</strong> Moderate impact. Address within 24 hours.</li>
+        <li><strong>LOW:</strong> Minimal impact. Handle during normal business hours.</li>
+      </ul>
+
+      <h3 style="color: var(--accent-green); margin: 1rem 0 0.75rem 0; font-size: 1rem;">Common Issues & Skills:</h3>
+      <p style="color: var(--text-secondary);">
+        Help desk professionals need knowledge of password resets, network connectivity (WiFi/Ethernet), 
+        printer troubleshooting, performance optimization, and software troubleshooting. Strong communication 
+        skills are essential for explaining technical solutions to non-technical users.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>IT Helpdesk Ticket System Simulation | Help Desk Operations Training</p>
+    <p>Data stored locally in browser | No external connections</p>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    const ticketSystem = new TicketSystem();
+    let ticketHistory = labMemory.get('helpdesk_tickets') || [];
+
+    function submitTicket() {
+      const issueType = document.getElementById('issue-type').value;
+      const description = document.getElementById('description').value.trim();
+
+      if (!issueType || !description) {
+        alert('Please select an issue type and provide a description.');
+        return;
+      }
+
+      // Create ticket
+      const ticket = ticketSystem.createTicket(issueType, description);
+
+      // Save to history
+      ticketHistory.push(ticket);
+      labMemory.set('helpdesk_tickets', ticketHistory);
+
+      // Display confirmation
+      displayConfirmation(ticket);
+
+      // Update memory panel
+      addMemoryEvent('HELPDESK_TICKET', `Ticket ${ticket.ticketId} created: ${issueType} (Priority: ${ticket.priority})`);
+
+      // Update history display
+      updateHistoryDisplay();
+    }
+
+    function displayConfirmation(ticket) {
+      document.getElementById('issue-type').style.display = 'none';
+      document.getElementById('description').parentElement.style.display = 'none';
+      document.querySelector('.card > div > button').style.display = 'none';
+
+      document.getElementById('ticket-id').textContent = ticket.ticketId;
+      document.getElementById('priority-display').textContent = ticket.priority;
+
+      const stepsHtml = ticket.troubleshootingSteps.map((step, i) => 
+        `<li>${step}</li>`
+      ).join('');
+      document.getElementById('troubleshooting-steps').innerHTML = stepsHtml;
+
+      document.getElementById('confirmation-section').style.display = 'block';
+    }
+
+    function resetForm() {
+      document.getElementById('issue-type').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('issue-type').style.display = 'block';
+      document.getElementById('description').parentElement.style.display = 'block';
+      document.querySelector('.card > div > button').style.display = 'block';
+      document.getElementById('confirmation-section').style.display = 'none';
+    }
+
+    function updateHistoryDisplay() {
+      if (ticketHistory.length === 0) {
+        document.getElementById('history-section').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('history-section').style.display = 'block';
+      document.getElementById('ticket-count').textContent = ticketHistory.length;
+
+      const tbody = document.getElementById('history-table');
+      tbody.innerHTML = ticketHistory.map(ticket => `
+        <tr>
+          <td style="font-family: monospace; color: var(--accent-blue); font-weight: 600;">${ticket.ticketId}</td>
+          <td>${getCategoryLabel(ticket.issueType)}</td>
+          <td><span class="status-badge ${getPriorityClass(ticket.priority)}">${ticket.priority}</span></td>
+          <td><small>${formatTimestamp(ticket.createdAt)}</small></td>
+          <td><span class="status-badge status-info">${ticket.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function getCategoryLabel(type) {
+      const labels = {
+        'password_reset': '🔑 Password Reset',
+        'wifi_issue': '📡 WiFi Issue',
+        'printer_issue': '🖨️ Printer Issue',
+        'slow_computer': '⚙️ Performance',
+        'software_issue': '💾 Software'
+      };
+      return labels[type] || type;
+    }
+
+    function getPriorityClass(priority) {
+      switch(priority) {
+        case 'CRITICAL': return 'status-danger';
+        case 'HIGH': return 'status-warning';
+        case 'MEDIUM': return 'status-info';
+        case 'LOW': return 'status-success';
+        default: return 'status-info';
+      }
+    }
+
+    function clearHistory() {
+      if (confirm('Clear all tickets?')) {
+        ticketHistory = [];
+        labMemory.set('helpdesk_tickets', ticketHistory);
+        document.getElementById('history-section').style.display = 'none';
+        resetForm();
+        addMemoryEvent('HELPDESK_CLEAR', 'All tickets cleared');
+      }
+    }
+
+    // Initialize
+    updateHistoryDisplay();
+  </script>
+</body>
+</html>

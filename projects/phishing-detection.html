@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phishing Detection Simulator - Cybersecurity Lab</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="header-title">🎣 Phishing Detection Simulator</div>
+      <div class="header-subtitle">Security Awareness | Email Threat Detection & Analysis</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <a href="../" class="back-link">← Back to Dashboard</a>
+
+    <!-- PROGRESS SECTION -->
+    <div class="card" id="progress-section" style="display: none;">
+      <div class="card-title">📈 Training Progress</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+        <div style="background: rgba(0, 212, 255, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-blue);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Reviewed</div>
+          <div style="font-size: 1.8rem; color: var(--accent-blue); font-weight: 700;" id="stat-reviewed">0</div>
+        </div>
+        <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-green);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Correct</div>
+          <div style="font-size: 1.8rem; color: var(--accent-green); font-weight: 700;" id="stat-correct">0</div>
+        </div>
+        <div style="background: rgba(255, 51, 102, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-red);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Missed</div>
+          <div style="font-size: 1.8rem; color: var(--accent-red); font-weight: 700;" id="stat-missed">0</div>
+        </div>
+        <div style="background: rgba(255, 215, 0, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-yellow);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Accuracy</div>
+          <div style="font-size: 1.8rem; color: var(--accent-yellow); font-weight: 700;" id="stat-accuracy">-</div>
+        </div>
+      </div>
+      <button style="margin-top: 1rem;" class="btn btn-danger" onclick="resetTraining()">Reset Training</button>
+    </div>
+
+    <!-- EMAIL CARDS -->
+    <div id="email-container">
+      <!-- Emails will be populated here -->
+    </div>
+
+    <!-- INSTRUCTIONS -->
+    <div class="card">
+      <div class="card-title">📖 Phishing Awareness Training</div>
+      <p>
+        <strong>Your Task:</strong> Review each email and determine if it is legitimate or a phishing attempt. 
+        Click the appropriate button to classify each email. You'll receive feedback and learn why emails are classified as phishing.
+      </p>
+      <p style="margin-top: 1rem; color: var(--text-secondary);">
+        <strong>Common Phishing Indicators to Look For:</strong>
+      </p>
+      <ul style="margin-left: 1.5rem; color: var(--text-secondary);">
+        <li><strong>Urgency Language:</strong> "Immediate action required," "Your account will be locked," "Limited time"</li>
+        <li><strong>Suspicious Domains:</strong> Domain names that misspell legitimate companies (paypa1 instead of paypal)</li>
+        <li><strong>Requests for Sensitive Info:</strong> Asking for passwords, credit cards, or personal data via email</li>
+        <li><strong>Impersonation:</strong> Claiming to be from banks, PayPal, Amazon, Microsoft, etc.</li>
+        <li><strong>Suspicious Links:</strong> Hover to see actual URL before clicking</li>
+        <li><strong>Poor Grammar/Formatting:</strong> Professional companies have QA processes</li>
+        <li><strong>Generic Greetings:</strong> "Dear User" instead of your actual name (legitimate companies know you)</li>
+      </ul>
+    </div>
+
+    <!-- MEMORY PANEL -->
+    <div id="memory-panel"></div>
+
+    <!-- EDUCATIONAL INFO -->
+    <div class="card">
+      <div class="card-title">🎓 Why Phishing Defense Matters</div>
+      <p>
+        Phishing is the most common attack vector for credential theft and ransomware deployment. 
+        In 2023, over 90% of data breaches involved phishing. Security awareness training is critical 
+        for:
+      </p>
+      <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+        <li>Preventing unauthorized access to company systems</li>
+        <li>Protecting customer data and privacy</li>
+        <li>Avoiding ransomware and malware infections</li>
+        <li>Meeting compliance requirements (HIPAA, GDPR, SOC 2)</li>
+        <li>Reducing incident response costs</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Phishing Detection Training Simulator | Security Awareness Program</p>
+    <p>Data stored locally in browser | No external connections</p>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    const classifier = new PhishingClassifier();
+    let trainingStats = labMemory.get('phishing_training_stats') || { reviewed: 0, correct: 0, missed: 0 };
+
+    function renderEmails() {
+      const container = document.getElementById('email-container');
+      const emails = classifier.getEmails();
+
+      container.innerHTML = emails.map(email => `
+        <div class="card">
+          <div class="card-title">Email #${email.id}</div>
+          
+          <div style="background: rgba(10, 14, 39, 0.8); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+            <div style="margin-bottom: 0.75rem;">
+              <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">From:</div>
+              <div style="font-family: monospace; color: var(--accent-blue);">${email.from}</div>
+            </div>
+            <div style="margin-bottom: 0.75rem;">
+              <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Subject:</div>
+              <div style="font-weight: 600;">${email.subject}</div>
+            </div>
+            <div>
+              <div style="color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase;">Message:</div>
+              <div style="padding: 0.75rem; background: rgba(0, 0, 0, 0.3); border-radius: 4px; margin-top: 0.5rem;">
+                ${email.body}
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+            <button class="btn btn-secondary" onclick="classifyEmail(${email.id}, false)">✓ Mark as Safe</button>
+            <button class="btn btn-danger" onclick="classifyEmail(${email.id}, true)">⚠ Mark as Phishing</button>
+          </div>
+
+          <div id="result-${email.id}" style="display: none;">
+            <!-- Result will appear here -->
+          </div>
+        </div>
+      `).join('');
+
+      updateProgress();
+    }
+
+    function classifyEmail(emailId, isPhishing) {
+      const analysis = classifier.analyzeEmail(emailId);
+      const isCorrect = analysis.isPhishing === isPhishing;
+
+      // Update stats
+      trainingStats.reviewed++;
+      if (isCorrect) {
+        trainingStats.correct++;
+      } else {
+        trainingStats.missed++;
+      }
+
+      // Save stats
+      labMemory.set('phishing_training_stats', trainingStats);
+      updateProgress();
+
+      // Display result
+      const resultDiv = document.getElementById(`result-${emailId}`);
+      resultDiv.innerHTML = `
+        <div class="alert ${isCorrect ? 'alert-success' : 'alert-danger'}">
+          <strong>${isCorrect ? '✓ CORRECT' : '✗ INCORRECT'}</strong><br>
+          This email is ${analysis.isPhishing ? 'PHISHING' : 'LEGITIMATE'}.<br><br>
+          <strong>Analysis:</strong> ${analysis.explanation}
+        </div>
+
+        ${analysis.indicators.length > 0 ? `
+          <div style="margin-top: 1rem; padding: 1rem; background: rgba(255, 215, 0, 0.1); border-radius: 6px; border-left: 3px solid var(--accent-yellow);">
+            <strong style="color: var(--accent-yellow);">Detected Indicators:</strong>
+            <ul style="margin: 0.5rem 0 0 1.5rem; color: var(--text-secondary);">
+              ${analysis.indicators.map(ind => `<li><strong>${ind.type}</strong>: "${ind.text}" (${ind.severity})</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+      `;
+      resultDiv.style.display = 'block';
+
+      // Add memory event
+      addMemoryEvent('PHISHING_CLASSIFICATION', `Email ${emailId}: ${isCorrect ? 'Correct' : 'Incorrect'} - User classified as ${isPhishing ? 'Phishing' : 'Safe'}, Actual: ${analysis.isPhishing ? 'Phishing' : 'Safe'}`);
+
+      // Disable buttons
+      const buttons = document.querySelectorAll(`[onclick*="classifyEmail(${emailId}"]`);
+      buttons.forEach(btn => btn.disabled = true);
+    }
+
+    function updateProgress() {
+      document.getElementById('progress-section').style.display = 'block';
+      document.getElementById('stat-reviewed').textContent = trainingStats.reviewed;
+      document.getElementById('stat-correct').textContent = trainingStats.correct;
+      document.getElementById('stat-missed').textContent = trainingStats.missed;
+
+      if (trainingStats.reviewed > 0) {
+        const accuracy = ((trainingStats.correct / trainingStats.reviewed) * 100).toFixed(1);
+        document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
+      }
+    }
+
+    function resetTraining() {
+      if (confirm('Reset all training data?')) {
+        trainingStats = { reviewed: 0, correct: 0, missed: 0 };
+        labMemory.set('phishing_training_stats', trainingStats);
+        renderEmails();
+        addMemoryEvent('PHISHING_RESET', 'Training data reset');
+      }
+    }
+
+    // Initialize
+    renderEmails();
+  </script>
+</body>
+</html>

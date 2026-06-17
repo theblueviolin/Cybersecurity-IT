@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOC Log Analysis Dashboard - Cybersecurity Lab</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div class="header-title">📊 SOC Log Analysis Dashboard</div>
+      <div class="header-subtitle">Security Operations Center | Log Monitoring & Threat Detection</div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <a href="../" class="back-link">← Back to Dashboard</a>
+
+    <!-- CONTROLS SECTION -->
+    <div class="card">
+      <div class="card-title">🎮 Simulation Controls</div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <button onclick="generateLogs()">Generate Logs</button>
+        <button class="btn btn-secondary" onclick="analyzeLogs()">Analyze Logs</button>
+        <button class="btn" onclick="exportReport()">Export Report (JSON)</button>
+        <button class="btn" onclick="clearLogs()">Clear All</button>
+      </div>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem;">
+        <strong>Instructions:</strong> Click "Generate Logs" to create authentication logs with randomized usernames, IPs, and success/failure statuses. 
+        Click "Analyze Logs" to run security analysis and detect brute force attacks.
+      </p>
+    </div>
+
+    <!-- LOGS OUTPUT -->
+    <div class="card" id="logs-section" style="display: none;">
+      <div class="card-title">📝 Generated Authentication Logs</div>
+      <div style="max-height: 400px; overflow-y: auto; background: rgba(10, 14, 39, 0.5); padding: 1rem; border-radius: 6px; border: 1px solid var(--border-color);">
+        <table>
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Username</th>
+              <th>IP Address</th>
+              <th>Action</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="logs-table">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ANALYSIS RESULTS -->
+    <div class="card" id="analysis-section" style="display: none;">
+      <div class="card-title">🔍 Security Analysis Results</div>
+
+      <!-- Summary Stats -->
+      <div class="grid grid-2" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+        <div style="background: rgba(0, 212, 255, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-blue);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Total Logins</div>
+          <div style="font-size: 2rem; color: var(--accent-blue); font-weight: 700;" id="stat-total">0</div>
+        </div>
+        <div style="background: rgba(255, 51, 102, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-red);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Failed Logins</div>
+          <div style="font-size: 2rem; color: var(--accent-red); font-weight: 700;" id="stat-failed">0</div>
+        </div>
+        <div style="background: rgba(0, 255, 136, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-green);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Successful Logins</div>
+          <div style="font-size: 2rem; color: var(--accent-green); font-weight: 700;" id="stat-success">0</div>
+        </div>
+        <div style="background: rgba(255, 215, 0, 0.1); padding: 1rem; border-radius: 6px; border-left: 3px solid var(--accent-yellow);">
+          <div style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase;">Suspicious IPs</div>
+          <div style="font-size: 2rem; color: var(--accent-yellow); font-weight: 700;" id="stat-suspicious">0</div>
+        </div>
+      </div>
+
+      <!-- Threat Detection -->
+      <div id="threat-alert" style="display: none;">
+        <div class="alert alert-danger" style="margin-bottom: 1rem;">
+          <strong>⚠️ THREAT DETECTED: BRUTE FORCE ATTACK</strong><br>
+          Multiple failed login attempts detected from same IP address within short time window. Potential brute force attack in progress. Recommend: Block IP, review logs, check for compromised credentials.
+        </div>
+      </div>
+
+      <!-- Suspicious IPs Table -->
+      <div>
+        <h3 style="color: var(--accent-blue); margin-bottom: 1rem; font-size: 1.1rem;">Suspicious IP Addresses</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>IP Address</th>
+              <th>Failed Attempts</th>
+              <th>Risk Level</th>
+              <th>Recommendation</th>
+            </tr>
+          </thead>
+          <tbody id="suspicious-ips-table">
+            <tr>
+              <td colspan="4" style="text-align: center; color: var(--text-secondary);">Run analysis to populate</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Incident Report -->
+      <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0, 212, 255, 0.1); border-radius: 6px; border: 1px solid var(--border-color);">
+        <h3 style="color: var(--accent-green); margin-bottom: 0.5rem; font-size: 1rem;">Incident Summary</h3>
+        <p id="incident-summary" style="color: var(--text-secondary); font-size: 0.9rem;">
+          Complete log analysis to generate incident summary.
+        </p>
+      </div>
+    </div>
+
+    <!-- MEMORY PANEL -->
+    <div id="memory-panel"></div>
+
+    <!-- EDUCATIONAL INFO -->
+    <div class="card">
+      <div class="card-title">📖 About This Simulation</div>
+      <div style="color: var(--text-secondary); line-height: 1.8;">
+        <p><strong>What is Log Analysis?</strong></p>
+        <p>
+          SOC analysts monitor authentication logs to detect security threats. Failed login attempts can indicate brute force attacks where attackers try multiple passwords. By analyzing patterns, analysts identify:
+        </p>
+        <ul style="margin-left: 1.5rem; margin-bottom: 1rem;">
+          <li><strong>Brute Force Attacks:</strong> Multiple failed login attempts from same IP in short time</li>
+          <li><strong>Distributed Attacks:</strong> Failed attempts from multiple IPs (indicates botnet)</li>
+          <li><strong>Privilege Escalation:</strong> Unusual admin account activity</li>
+          <li><strong>Time Anomalies:</strong> Logins outside business hours</li>
+        </ul>
+        <p><strong>Response Actions:</strong></p>
+        <ul style="margin-left: 1.5rem;">
+          <li>Block suspicious IP addresses (firewall/WAF)</li>
+          <li>Reset potentially compromised credentials</li>
+          <li>Enable multi-factor authentication</li>
+          <li>Investigate compromised accounts</li>
+          <li>Generate incident report for management</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>SOC Log Analysis Simulation | Security Operations Center Training</p>
+    <p>Data stored locally in browser | No external connections</p>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script>
+    const logGenerator = new LogGenerator();
+    const analyzer = new SecurityAnalyzer();
+    let currentLogs = [];
+
+    function generateLogs() {
+      currentLogs = logGenerator.generateLogs(20);
+      displayLogs(currentLogs);
+      
+      // Save to memory
+      labMemory.set('soc_last_logs', currentLogs);
+      addMemoryEvent('SOC_LOG_GENERATION', `Generated ${currentLogs.length} authentication logs`);
+      
+      // Hide analysis on fresh generation
+      document.getElementById('analysis-section').style.display = 'none';
+      
+      // Show alert
+      alert(`Generated ${currentLogs.length} authentication logs. Click "Analyze Logs" to detect threats.`);
+    }
+
+    function displayLogs(logs) {
+      const tbody = document.getElementById('logs-table');
+      tbody.innerHTML = logs.map(log => `
+        <tr>
+          <td><small>${formatTimestamp(log.timestamp)}</small></td>
+          <td>${log.username}</td>
+          <td>${log.ip}</td>
+          <td>${log.action}</td>
+          <td>
+            <span class="status-badge ${log.status === 'SUCCESS' ? 'status-success' : 'status-danger'}">
+              ${log.status}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+
+      document.getElementById('logs-section').style.display = 'block';
+    }
+
+    function analyzeLogs() {
+      if (currentLogs.length === 0) {
+        alert('Please generate logs first.');
+        return;
+      }
+
+      const analysis = analyzer.detectBruteForce(currentLogs);
+      
+      // Update stats
+      document.getElementById('stat-total').textContent = analysis.totalLogins;
+      document.getElementById('stat-failed').textContent = analysis.failedLogins;
+      document.getElementById('stat-success').textContent = analysis.successfulLogins;
+      document.getElementById('stat-suspicious').textContent = analysis.suspiciousIPs.length;
+
+      // Display suspicious IPs
+      const tbody = document.getElementById('suspicious-ips-table');
+      if (analysis.suspiciousIPs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-secondary);">No suspicious activity detected</td></tr>';
+      } else {
+        tbody.innerHTML = analysis.suspiciousIPs.map(ip => `
+          <tr>
+            <td style="font-family: monospace; color: var(--accent-blue);">${ip.ip}</td>
+            <td>${ip.failureCount}</td>
+            <td><span class="status-badge status-${ip.risk === 'HIGH' ? 'danger' : 'warning'}">${ip.risk}</span></td>
+            <td>Block IP, reset credentials, enable MFA</td>
+          </tr>
+        `).join('');
+      }
+
+      // Show threat alert if brute force detected
+      const threatAlert = document.getElementById('threat-alert');
+      if (analysis.bruteForceDetected) {
+        threatAlert.style.display = 'block';
+      } else {
+        threatAlert.style.display = 'none';
+      }
+
+      // Generate incident summary
+      const summary = `
+        Analysis completed at ${new Date().toLocaleString()}.
+        Total login attempts: ${analysis.totalLogins}.
+        Failed logins: ${analysis.failedLogins} (${((analysis.failedLogins / analysis.totalLogins) * 100).toFixed(1)}%).
+        ${analysis.bruteForceDetected ? 'ALERT: Brute force attack pattern detected! ' : 'No brute force patterns detected. '}
+        ${analysis.suspiciousIPs.length} IP(s) flagged for suspicious activity.
+        Recommendation: ${analysis.suspiciousIPs.length > 0 ? 'Implement IP blocking and credential reset procedures.' : 'Continue monitoring.'}
+      `;
+      document.getElementById('incident-summary').textContent = summary;
+
+      document.getElementById('analysis-section').style.display = 'block';
+
+      // Save to memory
+      labMemory.set('soc_last_analysis', analysis);
+      addMemoryEvent('SOC_ANALYSIS_COMPLETE', `Analysis: ${analysis.totalLogins} logins, ${analysis.failedLogins} failed, ${analysis.bruteForceDetected ? 'BRUTE FORCE DETECTED' : 'All clear'}`);
+    }
+
+    function exportReport() {
+      if (currentLogs.length === 0) {
+        alert('Please generate logs first.');
+        return;
+      }
+
+      const analysis = analyzer.detectBruteForce(currentLogs);
+      const report = {
+        reportType: 'SOC_Log_Analysis',
+        generatedAt: new Date().toISOString(),
+        logs: currentLogs,
+        analysis: analysis
+      };
+
+      exportToJSON(report, 'soc-log-analysis-report.json');
+      addMemoryEvent('SOC_EXPORT', 'Incident report exported to JSON');
+    }
+
+    function clearLogs() {
+      if (confirm('Clear all logs?')) {
+        currentLogs = [];
+        document.getElementById('logs-section').style.display = 'none';
+        document.getElementById('analysis-section').style.display = 'none';
+        labMemory.clear('soc_last_logs');
+        addMemoryEvent('SOC_CLEAR', 'All logs cleared');
+      }
+    }
+  </script>
+</body>
+</html>
