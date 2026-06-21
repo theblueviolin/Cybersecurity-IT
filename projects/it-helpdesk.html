@@ -10,8 +10,11 @@
   <!-- HEADER -->
   <header>
     <div class="header-container">
-      <div class="header-title">🎫 IT Helpdesk Ticket System</div>
-      <div class="header-subtitle">IT Support | Help Desk Operations & Troubleshooting</div>
+      <div>
+        <div class="header-title">🎫 IT Helpdesk Ticket System</div>
+        <div class="header-subtitle">IT Support | Help Desk Operations & Troubleshooting</div>
+      </div>
+      <div class="header-clock" id="page-clock"></div>
     </div>
   </header>
 
@@ -37,7 +40,7 @@
         <label style="color: var(--accent-blue); font-weight: 600; display: block; margin-bottom: 0.5rem;">Describe Your Issue:</label>
         <textarea id="description" placeholder="Provide detailed description of the issue..." style="min-height: 100px; margin-bottom: 1rem;"></textarea>
 
-        <button class="btn btn-secondary" onclick="submitTicket()" style="width: 100%;">Submit Ticket</button>
+        <button class="btn btn-submit-ticket" onclick="submitTicket()" style="width: 100%;">Submit Ticket</button>
       </div>
     </div>
 
@@ -59,8 +62,22 @@
         </ol>
       </div>
 
-      <button class="btn" onclick="resetForm()" style="width: 100%; margin-top: 1rem;">Create Another Ticket</button>
-      <button class="btn" onclick="pushCurrentTicketToServiceNow()" style="width: 100%; margin-top: 0.5rem;">Create ServiceNow Incident</button>
+      <div id="resolution-status" style="display: none; margin-top: 1rem;">
+        <div class="alert alert-success" id="resolution-alert">
+          <strong>✓ Ticket Resolved</strong><br>
+          <span id="resolution-summary"></span>
+        </div>
+      </div>
+
+      <button class="btn btn-resolve-ticket" onclick="showResolutionForm()" style="width: 100%; margin-top: 1rem;">Resolve Ticket</button>
+      <div id="resolution-panel" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(0, 255, 136, 0.08); border-radius: 8px; border: 1px solid var(--accent-green);">
+        <label style="color: var(--accent-blue); font-weight: 700; display: block; margin-bottom: 0.5rem;">Resolution Notes:</label>
+        <textarea id="resolution-notes" placeholder="Document the resolution steps taken..." style="width: 100%; min-height: 100px; margin-bottom: 0.75rem;"></textarea>
+        <button class="btn btn-save-resolution" onclick="saveTicketResolution()" style="width: 100%;">Save Resolution</button>
+      </div>
+
+      <button class="btn btn-create-another" onclick="resetForm()" style="width: 100%; margin-top: 1rem;">Create Another Ticket</button>
+      <button class="btn btn-servicenow" onclick="pushCurrentTicketToServiceNow()" style="width: 100%; margin-top: 0.5rem;">Create ServiceNow Incident</button>
     </div>
 
     <!-- TICKET HISTORY -->
@@ -69,6 +86,14 @@
       <p style="color: var(--text-secondary); margin-bottom: 1rem;">
         Total tickets submitted: <strong style="color: var(--accent-blue);" id="ticket-count">0</strong>
       </p>
+      <div id="history-resolution-panel" style="display: none; margin-bottom: 1rem; padding: 1rem; background: rgba(0, 255, 136, 0.08); border-radius: 8px; border: 1px solid var(--accent-green);">
+        <label style="color: var(--accent-blue); font-weight: 700; display: block; margin-bottom: 0.5rem;">Resolution Notes:</label>
+        <textarea id="history-resolution-notes" placeholder="Document the resolution steps taken when resolving this ticket..." style="width: 100%; min-height: 100px; margin-bottom: 0.75rem;"></textarea>
+        <div style="display:flex; gap:0.5rem; flex-wrap: wrap;">
+          <button class="btn btn-save-resolution" onclick="saveTicketResolution()" style="flex:1; min-width: 180px;">Save Resolution</button>
+          <button class="btn btn-clear-results" onclick="cancelHistoryResolution()" style="flex:1; min-width: 180px;">Cancel</button>
+        </div>
+      </div>
       <div style="max-height: 400px; overflow-y: auto;">
         <table>
           <thead>
@@ -78,13 +103,14 @@
               <th>Priority</th>
               <th>Created</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody id="history-table">
           </tbody>
         </table>
       </div>
-      <button class="btn btn-danger" onclick="clearHistory()" style="margin-top: 1rem;">Clear History</button>
+      <button class="btn btn-clear-history" onclick="clearHistory()" style="margin-top: 1rem;">Clear History</button>
     </div>
 
     <!-- MEMORY PANEL -->
@@ -186,10 +212,82 @@
     function resetForm() {
       document.getElementById('issue-type').value = '';
       document.getElementById('description').value = '';
+      document.getElementById('resolution-notes').value = '';
       document.getElementById('issue-type').style.display = 'block';
       document.getElementById('description').parentElement.style.display = 'block';
       document.querySelector('.card > div > button').style.display = 'block';
       document.getElementById('confirmation-section').style.display = 'none';
+      document.getElementById('resolution-panel').style.display = 'none';
+      document.getElementById('resolution-status').style.display = 'none';
+      window.lastCreatedTicket = null;
+    }
+
+    function showResolutionForm(ticketId) {
+      document.getElementById('resolution-panel').style.display = 'none';
+      document.getElementById('history-resolution-panel').style.display = 'none';
+      document.getElementById('history-resolution-notes').value = '';
+      window.ticketBeingResolved = null;
+
+      if (ticketId) {
+        const ticket = ticketHistory.find(t => t.ticketId === ticketId);
+        if (!ticket) return alert('Unable to locate the ticket.');
+        if (ticket.status === 'RESOLVED') return alert('This ticket is already resolved.');
+
+        window.ticketBeingResolved = ticketId;
+        document.getElementById('history-resolution-panel').style.display = 'block';
+        document.getElementById('history-resolution-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+
+      if (!window.lastCreatedTicket) {
+        return alert('Create a ticket before resolving it.');
+      }
+
+      document.getElementById('resolution-panel').style.display = 'block';
+      document.getElementById('resolution-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function saveTicketResolution() {
+      const notes = window.ticketBeingResolved
+        ? document.getElementById('history-resolution-notes').value.trim()
+        : document.getElementById('resolution-notes').value.trim();
+
+      if (!notes) {
+        return alert('Please document the resolution details before saving.');
+      }
+
+      const ticketId = window.ticketBeingResolved || (window.lastCreatedTicket && window.lastCreatedTicket.ticketId);
+      if (!ticketId) {
+        return alert('No ticket selected for resolution.');
+      }
+
+      const ticket = ticketHistory.find(t => t.ticketId === ticketId);
+      if (!ticket) {
+        return alert('Unable to locate the ticket.');
+      }
+
+      ticket.status = 'RESOLVED';
+      ticket.resolution = notes;
+      ticket.resolvedAt = new Date().toISOString();
+      labMemory.set('helpdesk_tickets', ticketHistory);
+      addMemoryEvent('HELPDESK_RESOLVE', `Ticket ${ticket.ticketId} resolved`);
+      updateHistoryDisplay();
+
+      if (window.ticketBeingResolved) {
+        document.getElementById('history-resolution-panel').style.display = 'none';
+        window.ticketBeingResolved = null;
+        alert(`Ticket ${ticket.ticketId} resolved and notes saved.`);
+      } else {
+        document.getElementById('resolution-status').style.display = 'block';
+        document.getElementById('resolution-summary').textContent = `${ticket.ticketId} marked RESOLVED. Resolution notes saved.`;
+        document.getElementById('resolution-panel').style.display = 'none';
+      }
+    }
+
+    function cancelHistoryResolution() {
+      window.ticketBeingResolved = null;
+      document.getElementById('history-resolution-panel').style.display = 'none';
+      document.getElementById('history-resolution-notes').value = '';
     }
 
     function updateHistoryDisplay() {
@@ -208,9 +306,21 @@
           <td>${getCategoryLabel(ticket.issueType)}</td>
           <td><span class="status-badge ${getPriorityClass(ticket.priority)}">${ticket.priority}</span></td>
           <td><small>${formatTimestamp(ticket.createdAt)}</small></td>
-          <td><span class="status-badge status-info">${ticket.status}</span></td>
+          <td><span class="status-badge ${getStatusClass(ticket.status)}">${ticket.status}</span></td>
+          <td style="display:flex; gap:0.5rem; flex-wrap: wrap;">
+            ${ticket.status === 'OPEN' ? `<button class="btn btn-resolve-ticket" onclick="showResolutionForm('${ticket.ticketId}')">Resolve</button>` : ''}
+            <button class="btn btn-danger" onclick="removeTicket('${ticket.ticketId}')">Remove</button>
+          </td>
         </tr>
       `).join('');
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case 'RESOLVED': return 'status-success';
+        case 'OPEN': return 'status-info';
+        default: return 'status-info';
+      }
     }
 
     function getCategoryLabel(type) {
@@ -242,6 +352,34 @@
         resetForm();
         addMemoryEvent('HELPDESK_CLEAR', 'All tickets cleared');
       }
+    }
+
+    function resolveTicketFromHistory(ticketId) {
+      const ticket = ticketHistory.find(t => t.ticketId === ticketId);
+      if (!ticket) return;
+      if (ticket.status === 'RESOLVED') return;
+
+      if (!confirm(`Resolve ticket ${ticket.ticketId}?`)) {
+        return;
+      }
+
+      ticket.status = 'RESOLVED';
+      ticket.resolution = 'Resolved from ticket history';
+      ticket.resolvedAt = new Date().toISOString();
+      labMemory.set('helpdesk_tickets', ticketHistory);
+      addMemoryEvent('HELPDESK_RESOLVE', `Ticket ${ticket.ticketId} resolved from history`);
+      updateHistoryDisplay();
+    }
+
+    function removeTicket(ticketId) {
+      if (!confirm(`Remove ticket ${ticketId}? This action cannot be undone.`)) return;
+      ticketHistory = ticketHistory.filter(ticket => ticket.ticketId !== ticketId);
+      labMemory.set('helpdesk_tickets', ticketHistory);
+      if (window.lastCreatedTicket && window.lastCreatedTicket.ticketId === ticketId) {
+        window.lastCreatedTicket = null;
+      }
+      addMemoryEvent('HELPDESK_REMOVE', `Ticket ${ticketId} removed from history`);
+      updateHistoryDisplay();
     }
 
     function pushCurrentTicketToServiceNow() {

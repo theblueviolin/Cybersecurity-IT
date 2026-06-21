@@ -10,8 +10,11 @@
   <!-- HEADER -->
   <header>
     <div class="header-container">
-      <div class="header-title">📊 SOC Log Analysis Dashboard</div>
-      <div class="header-subtitle">Security Operations Center | Log Monitoring & Threat Detection</div>
+      <div>
+        <div class="header-title">📊 SOC Log Analysis Dashboard</div>
+        <div class="header-subtitle">Security Operations Center | Log Monitoring & Threat Detection</div>
+      </div>
+      <div class="header-clock" id="page-clock"></div>
     </div>
   </header>
 
@@ -23,12 +26,12 @@
     <div class="card">
       <div class="card-title">🎮 Simulation Controls</div>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
-        <button onclick="generateLogs()">Generate Logs</button>
-        <button class="btn btn-secondary" onclick="analyzeLogs()">Analyze Logs</button>
-        <button class="btn" onclick="exportReport()">Export Report (JSON)</button>
-        <button class="btn" onclick="sendLogsToSplunk()">Send to Splunk</button>
-        <button class="btn btn-secondary" onclick="createServiceNowFromIncident()">Create ServiceNow Incident</button>
-        <button class="btn" onclick="clearLogs()">Clear All</button>
+        <button class="btn btn-generate" onclick="generateLogs()">Generate Logs</button>
+        <button class="btn btn-analyze" onclick="analyzeLogs()">Analyze Logs</button>
+        <button class="btn btn-export-report" onclick="exportReport()">Export Report (JSON)</button>
+        <button class="btn btn-splunk-logs" onclick="sendLogsToSplunk()">Send to Splunk</button>
+        <button class="btn btn-servicenow" onclick="createServiceNowFromIncident()">Create ServiceNow Incident</button>
+        <button class="btn btn-clear-all" onclick="clearLogs()">Clear All</button>
       </div>
       <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem;">
         <strong>Instructions:</strong> Click "Generate Logs" to create authentication logs with randomized usernames, IPs, and success/failure statuses. 
@@ -115,9 +118,9 @@
           Complete log analysis to generate incident summary.
         </p>
         <div style="margin-top: 0.75rem; display:flex; gap:0.5rem;">
-          <button class="btn" onclick="sendAnalysisToSplunk()">Send Analysis to Splunk</button>
-          <button class="btn btn-secondary" onclick="createServiceNowFromIncident()">Create ServiceNow Incident</button>
-          <button class="btn" onclick="sendIncidentToCrowdStrike()">Alert CrowdStrike</button>
+          <button class="btn btn-splunk-analysis" onclick="sendAnalysisToSplunk()">Send Analysis to Splunk</button>
+          <button class="btn btn-servicenow" onclick="createServiceNowFromIncident()">Create ServiceNow Incident</button>
+          <button class="btn btn-crowdstrike" onclick="sendIncidentToCrowdStrike()">Alert CrowdStrike</button>
         </div>
       </div>
     </div>
@@ -247,6 +250,7 @@
       document.getElementById('incident-summary').textContent = summary;
 
       document.getElementById('analysis-section').style.display = 'block';
+      document.getElementById('analysis-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       // Save to memory
       labMemory.set('soc_last_analysis', analysis);
