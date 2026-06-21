@@ -50,6 +50,21 @@ class LabMemory {
 
 const labMemory = new LabMemory('cybersoc');
 
+function startPageClock() {
+  const clockEl = document.getElementById('page-clock');
+  if (!clockEl) return;
+
+  function updateClock() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const dateString = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+    clockEl.textContent = `${dateString} · ${timeString}`;
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+}
+
 // ===== LOG GENERATION =====
 class LogGenerator {
   constructor() {
@@ -483,6 +498,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (integrationsContainer) {
     updateIntegrationsPanel();
   }
+
+  // Start header clock if present
+  startPageClock();
 
   // Add slide-in animation to cards
   const cards = document.querySelectorAll('.card, .project-card');

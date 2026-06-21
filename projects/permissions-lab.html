@@ -10,8 +10,11 @@
   <!-- HEADER -->
   <header>
     <div class="header-container">
-      <div class="header-title">🔑 Permissions & Access Control Lab</div>
-      <div class="header-subtitle">System Security | Least Privilege & Access Management</div>
+      <div>
+        <div class="header-title">🔑 Permissions & Access Control Lab</div>
+        <div class="header-subtitle">System Security | Least Privilege & Access Management</div>
+      </div>
+      <div class="header-clock" id="page-clock"></div>
     </div>
   </header>
 
@@ -59,7 +62,7 @@
         </div>
 
         <div style="display: flex; align-items: flex-end;">
-          <button class="btn btn-secondary" onclick="checkAccess()" style="width: 100%;">Check Access</button>
+          <button class="btn btn-check-access" onclick="checkAccess()" style="width: 100%;">Check Access</button>
         </div>
       </div>
 
@@ -287,6 +290,7 @@
         const btn = document.createElement('button');
         btn.className = 'btn';
         btn.id = 'log-to-splunk-btn';
+        btn.className = 'btn btn-splunk-permission';
         btn.style.marginTop = '0.75rem';
         btn.textContent = 'Log Decision to Splunk';
         btn.onclick = function() {

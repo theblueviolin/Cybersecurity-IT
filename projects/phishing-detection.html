@@ -10,8 +10,11 @@
   <!-- HEADER -->
   <header>
     <div class="header-container">
-      <div class="header-title">🎣 Phishing Detection Simulator</div>
-      <div class="header-subtitle">Security Awareness | Email Threat Detection & Analysis</div>
+      <div>
+        <div class="header-title">🎣 Phishing Detection Simulator</div>
+        <div class="header-subtitle">Security Awareness | Email Threat Detection & Analysis</div>
+      </div>
+      <div class="header-clock" id="page-clock"></div>
     </div>
   </header>
 
@@ -41,9 +44,9 @@
         </div>
       </div>
       <div style="display:flex; gap:0.5rem; margin-top:1rem;">
-        <button style="flex:1;" class="btn btn-danger" onclick="resetTraining()">Reset Training</button>
-        <button style="flex:1;" class="btn" onclick="exportTrainingToSplunk()">Export Training to Splunk</button>
-        <button style="flex:1;" class="btn btn-secondary" onclick="alertCrowdStrikeFromPhishing()">Send Last Alert to CrowdStrike</button>
+        <button style="flex:1;" class="btn btn-reset-training" onclick="resetTraining()">Reset Training</button>
+        <button style="flex:1;" class="btn btn-export-training" onclick="exportTrainingToSplunk()">Export Training to Splunk</button>
+        <button style="flex:1;" class="btn btn-crowdstrike-phishing" onclick="alertCrowdStrikeFromPhishing()">Send Last Alert to CrowdStrike</button>
       </div>
     </div>
 
@@ -132,8 +135,8 @@
           </div>
 
           <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-            <button class="btn btn-secondary" onclick="classifyEmail(${email.id}, false)">✓ Mark as Safe</button>
-            <button class="btn btn-danger" onclick="classifyEmail(${email.id}, true)">⚠ Mark as Phishing</button>
+            <button class="btn btn-mark-safe" onclick="classifyEmail(${email.id}, false)">✓ Mark as Safe</button>
+            <button class="btn btn-mark-phishing" onclick="classifyEmail(${email.id}, true)">⚠ Mark as Phishing</button>
           </div>
 
           <div id="result-${email.id}" style="display: none;">
@@ -199,6 +202,8 @@
       if (trainingStats.reviewed > 0) {
         const accuracy = ((trainingStats.correct / trainingStats.reviewed) * 100).toFixed(1);
         document.getElementById('stat-accuracy').textContent = `${accuracy}%`;
+      } else {
+        document.getElementById('stat-accuracy').textContent = '0%';
       }
     }
 

@@ -53,6 +53,18 @@ header {
   width: min(1200px, 50vw);
   margin: 0 auto;
   padding: 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.header-clock {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  text-align: right;
+  min-width: 200px;
+  margin-top: 0.35rem;
 }
 
 .header-title {
@@ -228,6 +240,268 @@ button, .btn, a.btn {
   display: inline-block;
 }
 
+button.btn-generate, .btn-generate {
+  background: rgba(255, 99, 171, 0.16);
+  border-color: #ff5aa8;
+  color: #ff5aa8;
+}
+
+button.btn-generate:hover, .btn-generate:hover {
+  background: rgba(255, 99, 171, 0.28);
+}
+
+button.btn-analyze, .btn-analyze {
+  background: rgba(0, 142, 255, 0.16);
+  border-color: #008eff;
+  color: #008eff;
+}
+
+button.btn-analyze:hover, .btn-analyze:hover {
+  background: rgba(0, 142, 255, 0.28);
+}
+
+button.btn-export-report, .btn-export-report {
+  background: rgba(0, 74, 170, 0.16);
+  border-color: #004aad;
+  color: #004aad;
+}
+
+button.btn-export-report:hover, .btn-export-report:hover {
+  background: rgba(0, 74, 170, 0.3);
+}
+
+button.btn-export-training, .btn-export-training {
+  background: rgba(0, 190, 190, 0.16);
+  border-color: #00bebf;
+  color: #00bebf;
+}
+
+button.btn-export-training:hover, .btn-export-training:hover {
+  background: rgba(0, 190, 190, 0.3);
+}
+
+button.btn-splunk, .btn-splunk {
+  background: rgba(255, 165, 0, 0.16);
+  border-color: #ff9800;
+  color: #ff9800;
+}
+
+button.btn-splunk:hover, .btn-splunk:hover {
+  background: rgba(255, 165, 0, 0.28);
+}
+
+button.btn-splunk-analysis, .btn-splunk-analysis {
+  background: rgba(255, 145, 0, 0.16);
+  border-color: #ff8c00;
+  color: #ff8c00;
+}
+
+button.btn-splunk-analysis:hover, .btn-splunk-analysis:hover {
+  background: rgba(255, 145, 0, 0.3);
+}
+
+button.btn-splunk-scan, .btn-splunk-scan {
+  background: rgba(255, 125, 25, 0.16);
+  border-color: #ff7d19;
+  color: #ff7d19;
+}
+
+button.btn-splunk-scan:hover, .btn-splunk-scan:hover {
+  background: rgba(255, 125, 25, 0.3);
+}
+
+button.btn-alert-crowdstrike, .btn-alert-crowdstrike {
+  background: rgba(155, 70, 255, 0.16);
+  border-color: #9b46ff;
+  color: #9b46ff;
+}
+
+button.btn-alert-crowdstrike:hover, .btn-alert-crowdstrike:hover {
+  background: rgba(155, 70, 255, 0.3);
+}
+
+button.btn-splunk-permission, .btn-splunk-permission {
+  background: rgba(255, 130, 90, 0.16);
+  border-color: #ff825a;
+  color: #ff825a;
+}
+
+button.btn-splunk-permission:hover, .btn-splunk-permission:hover {
+  background: rgba(255, 130, 90, 0.3);
+}
+
+button.btn-servicenow, .btn-servicenow {
+  background: rgba(255, 215, 0, 0.18);
+  border-color: #ffd700;
+  color: #ffd700;
+}
+
+button.btn-servicenow:hover, .btn-servicenow:hover {
+  background: rgba(255, 215, 0, 0.32);
+}
+
+button.btn-crowdstrike, .btn-crowdstrike {
+  background: rgba(190, 40, 255, 0.16);
+  border-color: #be28ff;
+  color: #be28ff;
+}
+
+button.btn-crowdstrike:hover, .btn-crowdstrike:hover {
+  background: rgba(190, 40, 255, 0.3);
+}
+
+button.btn-crowdstrike-phishing, .btn-crowdstrike-phishing {
+  background: rgba(220, 10, 200, 0.16);
+  border-color: #dc0ac8;
+  color: #dc0ac8;
+}
+
+button.btn-crowdstrike-phishing:hover, .btn-crowdstrike-phishing:hover {
+  background: rgba(220, 10, 200, 0.3);
+}
+
+button.btn-submit-ticket, .btn-submit-ticket {
+  background: rgba(0, 200, 150, 0.16);
+  border-color: #00c896;
+  color: #00c896;
+}
+
+button.btn-submit-ticket:hover, .btn-submit-ticket:hover {
+  background: rgba(0, 200, 150, 0.3);
+}
+
+button.btn-check-access, .btn-check-access {
+  background: rgba(0, 170, 255, 0.16);
+  border-color: #00aaff;
+  color: #00aaff;
+}
+
+button.btn-check-access:hover, .btn-check-access:hover {
+  background: rgba(0, 170, 255, 0.3);
+}
+
+button.btn-run-scan, .btn-run-scan {
+  background: rgba(120, 80, 255, 0.16);
+  border-color: #7850ff;
+  color: #7850ff;
+}
+
+button.btn-run-scan:hover, .btn-run-scan:hover {
+  background: rgba(120, 80, 255, 0.3);
+}
+
+button.btn-clear-all, .btn-clear-all {
+  background: rgba(255, 60, 110, 0.16);
+  border-color: #ff3c6e;
+  color: #ff3c6e;
+}
+
+button.btn-clear-all:hover, .btn-clear-all:hover {
+  background: rgba(255, 60, 110, 0.3);
+}
+
+button.btn-clear-results, .btn-clear-results {
+  background: rgba(230, 60, 0, 0.16);
+  border-color: #e63c00;
+  color: #e63c00;
+}
+
+button.btn-clear-results:hover, .btn-clear-results:hover {
+  background: rgba(230, 60, 0, 0.3);
+}
+
+button.btn-clear-history, .btn-clear-history {
+  background: rgba(210, 40, 90, 0.16);
+  border-color: #d2285a;
+  color: #d2285a;
+}
+
+button.btn-clear-history:hover, .btn-clear-history:hover {
+  background: rgba(210, 40, 90, 0.3);
+}
+
+button.btn-reset-training, .btn-reset-training {
+  background: rgba(220, 20, 200, 0.16);
+  border-color: #dc14c8;
+  color: #dc14c8;
+}
+
+button.btn-reset-training:hover, .btn-reset-training:hover {
+  background: rgba(220, 20, 200, 0.3);
+}
+
+button.btn-mark-safe, .btn-mark-safe {
+  background: rgba(0, 210, 120, 0.16);
+  border-color: #00d278;
+  color: #00d278;
+}
+
+button.btn-mark-safe:hover, .btn-mark-safe:hover {
+  background: rgba(0, 210, 120, 0.3);
+}
+
+button.btn-mark-phishing, .btn-mark-phishing {
+  background: rgba(255, 70, 20, 0.16);
+  border-color: #ff4614;
+  color: #ff4614;
+}
+
+button.btn-mark-phishing:hover, .btn-mark-phishing:hover {
+  background: rgba(255, 70, 20, 0.3);
+}
+
+button.btn-create-another, .btn-create-another {
+  background: rgba(0, 175, 140, 0.16);
+  border-color: #00af8c;
+  color: #00af8c;
+}
+
+button.btn-create-another:hover, .btn-create-another:hover {
+  background: rgba(0, 175, 140, 0.3);
+}
+
+button.btn-resolve-ticket, .btn-resolve-ticket {
+  background: rgba(80, 230, 120, 0.16);
+  border-color: #50e678;
+  color: #50e678;
+}
+
+button.btn-resolve-ticket:hover, .btn-resolve-ticket:hover {
+  background: rgba(80, 230, 120, 0.3);
+}
+
+button.btn-save-resolution, .btn-save-resolution {
+  background: rgba(55, 180, 255, 0.16);
+  border-color: #37b4ff;
+  color: #37b4ff;
+}
+
+button.btn-save-resolution:hover, .btn-save-resolution:hover {
+  background: rgba(55, 180, 255, 0.3);
+}
+
+button.btn-clear-history, .btn-clear-history {
+  background: rgba(215, 45, 95, 0.16);
+  border-color: #d72d5f;
+  color: #d72d5f;
+}
+
+button.btn-clear-history:hover, .btn-clear-history:hover {
+  background: rgba(215, 45, 95, 0.3);
+  box-shadow: 0 0 15px rgba(215, 45, 95, 0.5);
+}
+
+button.btn-danger, .btn-danger {
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+  background: rgba(255, 51, 102, 0.1);
+}
+
+button.btn-danger:hover, .btn-danger:hover {
+  background: rgba(255, 51, 102, 0.2);
+  box-shadow: 0 0 15px rgba(255, 51, 102, 0.5);
+}
+
 button:hover, .btn:hover, a.btn:hover {
   background: rgba(0, 212, 255, 0.2);
   box-shadow: 0 0 15px rgba(0, 212, 255, 0.5);
@@ -388,16 +662,21 @@ tbody tr:hover {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--accent-blue);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background: rgba(141, 85, 255, 0.18);
+  border: 1px solid rgba(141, 85, 255, 0.35);
+  color: #8d55ff;
   text-decoration: none;
   margin-bottom: 2rem;
-  font-weight: 600;
+  font-weight: 700;
   transition: all 0.3s ease;
 }
 
 .back-link:hover {
   gap: 1rem;
-  color: var(--accent-green);
+  background: rgba(141, 85, 255, 0.28);
+  color: #6f3be8;
 }
 
 /* ===== MEMORY PANEL ===== */
@@ -479,6 +758,15 @@ footer a:hover {
 
   header {
     padding: 1rem 1rem;
+  }
+
+  .header-container {
+    justify-content: center;
+  }
+
+  .header-clock {
+    min-width: auto;
+    margin-top: 0.75rem;
   }
 
   .header-title {
